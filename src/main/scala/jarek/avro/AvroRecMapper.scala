@@ -1,16 +1,14 @@
-package jarek
+package jarek.avro
 
 import java.io.ByteArrayOutputStream
 import java.util
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import jarek.avro.ReflectDataExt
-import org.apache.avro.{Conversion, Schema, SchemaBuilder}
 import org.apache.avro.generic.{GenericData, GenericDatumWriter}
 import org.apache.avro.io.EncoderFactory
-import org.apache.avro.reflect.{ReflectData, ReflectDatumWriter}
+import org.apache.avro.reflect.ReflectData
+import org.apache.avro.{Conversion, Schema, SchemaBuilder}
 
-import scala.collection
 import scala.collection.JavaConverters
 
 class AvroRecMapper extends ObjectMapper

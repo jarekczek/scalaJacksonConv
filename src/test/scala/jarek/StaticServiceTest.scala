@@ -2,6 +2,7 @@ package jarek
 
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.{Await, Future}
+import jarek.front.StaticService
 import org.mockito.Mockito
 import org.scalatest.{FlatSpec, Matchers}
 ;

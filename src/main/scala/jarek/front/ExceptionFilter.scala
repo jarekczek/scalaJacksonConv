@@ -1,10 +1,9 @@
-package jarek
+package jarek.front
 
 import java.io.{PrintWriter, StringWriter}
 
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Service, SimpleFilter}
-import com.twitter.util.Future
 
 class ExceptionFilter extends SimpleFilter[Request, Response] {
   def apply(req: Request, service: Service[Request, Response]) = {

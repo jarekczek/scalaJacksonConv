@@ -1,4 +1,4 @@
-package jarek
+package jarek.front
 
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Service, SimpleFilter}

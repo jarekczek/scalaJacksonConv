@@ -1,12 +1,10 @@
-package jarek
-
-import java.util.concurrent.CountDownLatch
+package jarek.front
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.io.Buf
 import com.twitter.util.Future
+import jarek.Conv
 
 class RootService() extends Service[Request, Response]
 {

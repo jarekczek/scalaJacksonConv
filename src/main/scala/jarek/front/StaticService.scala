@@ -1,4 +1,4 @@
-package jarek
+package jarek.front
 
 import java.io._
 

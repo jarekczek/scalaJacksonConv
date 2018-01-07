@@ -1,8 +1,9 @@
 package jarek
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.avro.AvroMapper
+import jarek.avro.AvroRecMapper
 
 object Conv
 {
@@ -15,7 +16,7 @@ object Conv
     format.toUpperCase() match  {
       case "XML" => new XmlMapper()
       case "JSON" => new ObjectMapper()
-      case "AVROREC" => new jarek.AvroRecMapper()
+      case "AVROREC" => new AvroRecMapper()
       case _ => throw new IllegalArgumentException(format)
     }
   }

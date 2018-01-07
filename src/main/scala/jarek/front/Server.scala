@@ -1,15 +1,12 @@
-package jarek
+package jarek.front
 
-import java.util.concurrent.{BlockingQueue, CountDownLatch, LinkedBlockingQueue}
 import java.util.concurrent.atomic.AtomicReference
-import java.util.function.BinaryOperator
+import java.util.concurrent.{CountDownLatch, LinkedBlockingQueue}
 
-import com.twitter.finagle.{Http, ListeningServer, Service, SimpleFilter}
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.util.{Await, Duration, Future}
+import com.twitter.finagle.{Http, ListeningServer, Service, SimpleFilter}
+import com.twitter.util.Await
 //import org.jboss.netty.handler.codec.http.{DefaultHttpResponse, HttpVersion, HttpResponseStatus, HttpRequest, HttpResponse}
-import java.net.{SocketAddress, InetSocketAddress}
-import com.twitter.finagle.builder.{Server, ServerBuilder}
 
 object MyServer {
 

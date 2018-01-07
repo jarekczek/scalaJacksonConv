@@ -1,12 +1,9 @@
-package jarek
-
-import java.io._
+package jarek.front
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
-
-import scala.collection.mutable.ArrayBuffer
+import jarek.{Conv, Input}
 
 class ConvertService extends Service[Request, Response] {
   def apply(req: Request) = {
