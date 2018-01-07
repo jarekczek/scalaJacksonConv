@@ -1,0 +1,102 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>conv</title>
+<script>
+
+function fetch(url, then) {
+  var xhr = new XMLHttpRequest();
+  xhr.timeout = 1000;
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+      //console.log("type: " + xhr.responseType);
+      //console.log(xhr.responseType);
+      //console.log(xhr.responseText);
+      then(xhr.responseText);
+    } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status != 0) {
+      document.querySelector('#answerText').innerHTML = 'status: ' + xhr.status;
+    } else {
+      document.querySelector('#answerText').innerHTML = 'status: ' + xhr.status + ', state: ' + xhr.readyState;
+    }
+  }
+  xhr.onerror = function(error) {
+    document.querySelector('#error').innerHTML = '<br/>error: ' + JSON.stringify(error);
+  }
+  xhr.ontimeout = function() {
+    document.querySelector('#error').innerHTML = 'timeout';
+  }
+  xhr.open('GET', "http://localhost:8123" + url, true);
+  xhr.send();
+}
+
+function convert() {
+  fetch("/convert", function(responseText) {
+    document.querySelector('#answerText').innerHTML = responseText;
+  });
+}
+
+function go() {
+  fetch("/", function(responseText) {
+    document.querySelector('#answerText').innerHTML = "go: " + responseText;
+  });
+}
+
+function stop() {
+  callUrl('stop')
+}
+
+function callUrl(url) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', "http://localhost:8123/" + url, true);
+  xhr.send();
+}
+
+function onload() {
+  var elements = [
+    document.querySelector('[name="inputFormat"]'),
+    document.querySelector('[name="outputFormat"]')
+  ];
+  fetch('/convformats', function(formatsStr) {
+    var formats = JSON.parse(formatsStr);
+    var options = ''
+    for(var format in formats) {
+      options += '\n' + '<option>' + formats[format] + '</option>';
+    }
+    for(var elem in elements)
+      elements[elem].innerHTML = options;
+  });
+}
+
+</script>
+
+<style type="text/css">
+  textarea { height: 5em; width: 30em; display: block;}
+  div.div1 { float:left; height: 8em; }
+</style>
+
+</head>
+<body onload="onload()">
+<p>answer: <span id='answerText'>?</span>
+<p id='error'/>
+<form >
+  <div style="background-color:red; height: 10em; ">
+    <div class="div1" style="width:40%; background-color:yellow;" >
+      <textarea name="input"></textarea>
+      <select name="inputFormat"></select>
+    </div>
+    <div class="div1" style="width: 20%;" >
+      <button type='button' onclick='convert()'>convert</button>
+    </div>
+    <div class="div1" style="width:40%; background-color:orange;" >
+      <textarea name="output"></textarea>
+    </div>
+    <select name="outputFormat"></select>
+  </div>
+  <div style="float: none; background-color:green; ">
+<button type='submit' formaction='convert'formmethod='post'>go</button>
+<button type='button' onclick='stop()'>stop</button>
+<button type='button' onclick='callUrl("reload")'>reload</button>
+  </div>
+</form>
+</body>
+</html>
