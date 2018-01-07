@@ -7,9 +7,10 @@ import java.util
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Await
+import jarek.avro.AvroSchemaGenerator
 import org.apache.avro.{Conversion, Schema, SchemaBuilder}
 import org.apache.avro.generic.{GenericData, GenericDatumReader}
-import org.apache.avro.io.{DatumReader, DecoderFactory, EncoderFactory}
+import org.apache.avro.io.{DatumReader, DatumWriter, DecoderFactory, EncoderFactory}
 import org.apache.avro.reflect.{ReflectData, ReflectDatumWriter}
 import org.apache.avro.specific.SpecificData
 import org.mockito.Mockito
@@ -61,10 +62,41 @@ class AvroReflectTest extends FlatSpec with Matchers {
   }
 
   "avro" should "handle arrays" in {
-    val jsonStr = "{\"b\":\"werwe\",\"c\":\"asdf\",\"r\":{\"e\":3,\"f\":\"5\"}\n, \"g\":[{\"h\": \"h\"}, {\"i\": \"i\"}]\n}"
+    val jsonStr =
+      """{"b":"werwe",
+        | "c":"asdf",
+        | "r":{"e":3,"f":"5"},
+        | "g":[{"h": "h"}, {"i": "i"}]
+        |}""".stripMargin
     val o = new ObjectMapper().readValue(jsonStr, classOf[Any])
-    val schema = AvroSchemaGenerator.createSchema(o.asInstanceOf[util.Map[String, Any]])
+    val schema = AvroSchemaGenerator.createSchema(o)
     println("schema with array: " + schema.toString(true))
+    schema.getField("b") should not be (null)
+    schema.getField("g") should not be (null)
+    schema.getField("r").schema.getField("g") should be (null)
+  }
+
+  "avro record" should "be generated" in {
+    val mapper = new AvroRecMapper()
+    val o = NestedMapHelper.createNestedMap
+    val schema = AvroSchemaGenerator.createSchema(o)
+    println("schema: " + schema.toString(true))
+    val rec = new GenericData.Record(schema)
+    rec.put("a", 3)
+    rec.put("b", 4)
+    val recD = new GenericData.Record(schema.getField("d").schema)
+    recD.put("c", "aaa")
+    rec.put("d", recD)
+    val recF = new GenericData.Record(recD.getSchema.getField("f").schema)
+    recF.put("e", "erter")
+    recD.put("f", recF)
+
+    println("record: " + rec.toString)
+    val wr = GenericData.get.createDatumWriter(schema).asInstanceOf[DatumWriter[GenericData.Record]]
+    val enc = EncoderFactory.get.binaryEncoder(System.out, null)
+    wr.write(rec, enc)
+    enc.flush()
+    println("record written")
   }
 }
 

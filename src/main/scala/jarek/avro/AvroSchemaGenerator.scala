@@ -1,10 +1,10 @@
-package jarek
+package jarek.avro
 
 import java.util
-import java.util.Collections
 
+import jarek.NestedMapTraversable
+import org.apache.avro.Schema
 import org.apache.avro.reflect.ReflectData
-import org.apache.avro.{Schema, SchemaBuilder}
 
 import scala.collection.JavaConverters
 
@@ -28,6 +28,11 @@ object AvroSchemaGenerator {
     schema.getType == Schema.Type.ARRAY && schema.getElementType.equals(dummyEnumSchema)
 
   def createSchema(o: Any, nameGiven: Option[String] = Option.empty): Schema = {
+    ReflectDataExt.getSchemaForObject(o, nameGiven)
+  }
+
+  /** This was unable to handle nested records properly. */
+  def createSchemaOld(o: Any, nameGiven: Option[String] = Option.empty): Schema = {
     val name = nameGiven.orElse(Some(o.getClass.getSimpleName)).get
     o match {
       case m: util.Map[String, Any] => createSchemaForMap(m, nameGiven)
@@ -44,7 +49,9 @@ object AvroSchemaGenerator {
         tuple match {
           case (name, map: util.Map[_, _]) => {
             if (name.startsWith("start ")) {
-              val innerRecord = Schema.createRecord(JavaConverters.seqAsJavaList(oldFields))
+              val recordName = name.drop(6) + map.hashCode()
+              val innerRecord = Schema.createRecord(recordName, null, null, false,
+                JavaConverters.seqAsJavaList(oldFields))
               List(createField(name.drop(6), innerRecord))
             } else {
               // End of schema may be ignored - passing the same back.
