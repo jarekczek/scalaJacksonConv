@@ -1,9 +1,9 @@
-package jarek
+package jarek.avro
 
 import java.util
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import jarek.avro.AvroSchemaGenerator
+import jarek._
 import org.scalatest.{FlatSpec, Matchers}
 
 class AvroRecMapperTest  extends FlatSpec with Matchers {
@@ -36,7 +36,7 @@ class AvroRecMapperTest  extends FlatSpec with Matchers {
         |  "g":[{"h": "h1"}, {"h": "h2"}]
         |}""".stripMargin
     val o = new ObjectMapper().readValue(jsonStr, classOf[Any])
-    val schema = AvroSchemaGenerator.createSchema(o)
+    val schema = ReflectDataExt.getSchemaForObject(o)
     println("schema: " + schema.toString(true))
     processObject(o)
   }
@@ -49,7 +49,7 @@ class AvroRecMapperTest  extends FlatSpec with Matchers {
         |"g":5
         |}""".stripMargin
     val o = new ObjectMapper().readValue(jsonStr, classOf[Any])
-    val schema = AvroSchemaGenerator.createSchema(o)
+    val schema = ReflectDataExt.getSchemaForObject(o)
     println("schema: " + schema.toString(true))
     processObject(o)
   }

@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream
 import java.util
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import jarek.avro.AvroSchemaGenerator
+import jarek.avro.ReflectDataExt
 import org.apache.avro.{Conversion, Schema, SchemaBuilder}
 import org.apache.avro.generic.{GenericData, GenericDatumWriter}
 import org.apache.avro.io.EncoderFactory
@@ -24,7 +24,7 @@ class AvroRecMapper extends ObjectMapper
   }
 
   def buildRecordForObject(value: Any): GenericData.Record = {
-    val schema = AvroSchemaGenerator.createSchema(value)
+    val schema = ReflectDataExt.getSchemaForObject(value)
     buildRecordForObjectRecur(value, schema)
   }
 

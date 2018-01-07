@@ -1,23 +1,16 @@
-package jarek
+package jarek.avro
 
-import java.io.{ByteArrayOutputStream, FileOutputStream}
-import java.lang.reflect.ParameterizedType
+import java.io.ByteArrayOutputStream
 import java.util
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.twitter.finagle.http.{Request, Response}
-import com.twitter.util.Await
-import jarek.avro.AvroSchemaGenerator
-import org.apache.avro.{Conversion, Schema, SchemaBuilder}
+import jarek._
+import org.apache.avro.Schema
 import org.apache.avro.generic.{GenericData, GenericDatumReader}
-import org.apache.avro.io.{DatumReader, DatumWriter, DecoderFactory, EncoderFactory}
+import org.apache.avro.io.{DatumWriter, DecoderFactory, EncoderFactory}
 import org.apache.avro.reflect.{ReflectData, ReflectDatumWriter}
 import org.apache.avro.specific.SpecificData
-import org.mockito.Mockito
 import org.scalatest.{FlatSpec, Matchers}
-
-import scala.collection.JavaConverters
-import scala.reflect.ClassTag
 
 class AvroReflectTest extends FlatSpec with Matchers {
   "Reflect" should "do sth" in {
@@ -52,12 +45,12 @@ class AvroReflectTest extends FlatSpec with Matchers {
     map.put("entry1", "v1")
     map.put("entry2", 3)
 
-    val schema = AvroSchemaGenerator.createSchema(map)
+    val schema = ReflectDataExt.getSchemaForObject(map)
     println("schema: " + schema.toString(true))
   }
 
   "nested map" should "be converted to avro" in {
-    val schema = AvroSchemaGenerator.createSchema(NestedMapHelper.createNestedMap)
+    val schema = ReflectDataExt.getSchemaForObject(NestedMapHelper.createNestedMap)
     println("schema: " + schema.toString(true))
   }
 
@@ -69,7 +62,7 @@ class AvroReflectTest extends FlatSpec with Matchers {
         | "g":[{"h": "h"}, {"i": "i"}]
         |}""".stripMargin
     val o = new ObjectMapper().readValue(jsonStr, classOf[Any])
-    val schema = AvroSchemaGenerator.createSchema(o)
+    val schema = ReflectDataExt.getSchemaForObject(o)
     println("schema with array: " + schema.toString(true))
     schema.getField("b") should not be (null)
     schema.getField("g") should not be (null)
@@ -79,7 +72,7 @@ class AvroReflectTest extends FlatSpec with Matchers {
   "avro record" should "be generated" in {
     val mapper = new AvroRecMapper()
     val o = NestedMapHelper.createNestedMap
-    val schema = AvroSchemaGenerator.createSchema(o)
+    val schema = ReflectDataExt.getSchemaForObject(o)
     println("schema: " + schema.toString(true))
     val rec = new GenericData.Record(schema)
     rec.put("a", 3)
